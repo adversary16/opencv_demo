@@ -59,14 +59,8 @@ class Cam:
         q = queuefy.queuefy(self.capture, self.cam.isOpened, args=[self.cam, fps])
         while self.cam.isOpened():
             f = q.get()
-            # imshow('f', f)
             processor_fn(f)
             q.task_done()
-            # k = waitKey(1)
-            # if k == 27:
-            #     self.cam.release()
-            #     destroyAllWindows()
-            #     break
 
 
     def stop(self):
