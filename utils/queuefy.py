@@ -7,5 +7,6 @@ def queuefy(target: Callable, while_trigger: Callable, args = ()):
     def fn(q: Queue):
         while while_trigger():
             q.put(target(*args))
-    Thread(target=fn, args=[q]).start()
+    thread = Thread(target=fn, args=[q], daemon=True)
+    thread.start()
     return q

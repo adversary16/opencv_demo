@@ -1,11 +1,18 @@
+import signal
 from cam import cam, process_video
 from time import sleep
 
-# cam_port = cam.get_cam_port()
-# cam.get_image(cam_port)
-
+def make_graceful_shutdown(cam: cam.Cam):
+    def killer(*args):
+        cam.stop()
+        exit(0)
+    return killer
 camera = cam.Cam()
-def l(*args):
-    print('gello', flush=True)
+kill_fn = make_graceful_shutdown(camera)
+
+signal.signal(signal.SIGINT, kill_fn)
+signal.signal(signal.SIGTERM, kill_fn)
+
 camera.start(30, process_video.contour)
+
 print(camera.port)
