@@ -67,18 +67,23 @@ class ChangeDetector:
     def process(self, frame: cv.typing.MatLike):
         is_changed , *_ = self.detect_change(frame, 30, 12, 12)
         src_frame = frame.copy()
+        self.detected_objects=getattr(self, 'detected_objects', [])
         if is_changed:
             if not self.on_change is None:
                 out_boxes, out_w, out_c = self.on_change(frame)
-                if len(out_boxes) > 0:
-                    print("change found", out_c)
-                    self.detection_boxes = out_boxes
-        for box in getattr(self, 'detection_boxes', []):
+                current_found = []
+                for index, box in enumerate(out_boxes):
+                    current_found.append([box, out_c[index]])
+                if len(current_found) > 0:
+                    self.detected_objects = current_found
+        for det in self.detected_objects:
+            [ box, label] = det
             b = np.array(box, dtype=int)
             fh, fw, _ = frame.shape
             [startx, starty]= b[:2]
             [endx, endy] = b[2:]
-            src_frame=cv.rectangle(frame, (max(starty, 0), max(startx, 0)), (min(endy, fh), min(endx, fw)), (255, 0, 0), 2)
+            src_frame=cv.rectangle(src_frame, (max(starty, 0), max(startx, 0)), (min(endy, fh), min(endx, fw)), (255, 0, 0), 2)
+            src_frame=cv.putText(src_frame, label, ((starty + endy) // 2, (startx + endx) //2), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0) )
         cv.imshow('im', src_frame)
         k = cv.waitKey(1)
         if k == 27:
