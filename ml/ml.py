@@ -47,10 +47,11 @@ class MlService:
             print(out_classes)
         else:
             print("No objects identified in source image.")
+        return out_boxes, out_scores, out_classes
 
     def process(self, frame):
         image=Image.fromarray(frame)
         image_data=self.preprocess(image)
         image_size = np.array([image.size[1], image.size[0]], dtype=np.float32).reshape(1, 2)
         boxes, scores, indices = self.session.run(None, {"input_1": image_data, "image_shape": image_size})
-        self.postprocess([boxes, scores, indices])
+        return self.postprocess([boxes, scores, indices])

@@ -18,6 +18,6 @@ signal.signal(signal.SIGTERM, kill_fn)
 change_detector = cd.ChangeDetector()
 object_detector = ml.MlService()
 change_detector.on_change = object_detector.process
-camera.start(15, change_detector.detect_change)
+camera.start(5, change_detector.process)
 
 print(camera.port)
