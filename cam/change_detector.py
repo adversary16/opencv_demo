@@ -8,9 +8,10 @@ def noop(*args):
 
 
 class ChangeDetector:
-    def __init__(self):
+    def __init__(self, change_threshold: float):
         self.on_change:typing.Callable=noop
         self.prev_segs=[]
+        self.change_threshold=change_threshold
 
     
     def segment_frame(self, frame: cv.typing.MatLike, h_parts: int, w_parts: int):
@@ -33,7 +34,7 @@ class ChangeDetector:
 
     def detect_change(self,
                       frame: cv.typing.MatLike,
-                      change_threshold: int,
+                      change_threshold: float,
                       hor_blocks: int = 1,
                       ver_blocks: int = 1):
         """
@@ -65,7 +66,7 @@ class ChangeDetector:
         
 
     def process(self, frame: cv.typing.MatLike):
-        is_changed , *_ = self.detect_change(frame, 30, 12, 12)
+        is_changed , *_ = self.detect_change(frame, self.change_threshold, 12, 12)
         src_frame = frame.copy()
         self.detected_objects=getattr(self, 'detected_objects', [])
         if is_changed:
